@@ -143,5 +143,42 @@ export const questions = [
     question: "If 1=3, 2=5, 3=7, 4=9, then 5=?",
     options: ["10", "11", "12", "13"],
     correctAnswer: 1
+  },
+  
+  // English
+  {
+    id: 21,
+    subject: "English",
+    question: "Choose the correct synonym for 'ABUNDANT':",
+    options: ["Scarce", "Plentiful", "Rare", "Limited"],
+    correctAnswer: 1
+  },
+  {
+    id: 22,
+    subject: "English",
+    question: "Select the correctly spelt word:",
+    options: ["Accomodation", "Accommodation", "Acommodation", "Accomoddation"],
+    correctAnswer: 1
+  },
+  {
+    id: 23,
+    subject: "English",
+    question: "Choose the correct antonym for 'TRANSPARENT':",
+    options: ["Clear", "Translucent", "Opaque", "Lucid"],
+    correctAnswer: 2
+  },
+  {
+    id: 24,
+    subject: "English",
+    question: "Identify the part of speech of the underlined word: She ran 'quickly' to the store.",
+    options: ["Adjective", "Adverb", "Noun", "Verb"],
+    correctAnswer: 1
+  },
+  {
+    id: 25,
+    subject: "English",
+    question: "Fill in the blank: Neither of the boys _____ returned the book.",
+    options: ["have", "has", "are", "were"],
+    correctAnswer: 1
   }
 ];

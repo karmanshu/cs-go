@@ -18,26 +18,26 @@ const Result = () => {
   const totalScore = score.correct * 4 - score.wrong;
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] py-10 px-4 sm:px-6 lg:px-8 animate-in fade-in duration-700">
+    <div className="flex-1 w-full bg-[#f8fafc] dark:bg-gray-900 py-10 px-4 sm:px-6 lg:px-8 animate-in fade-in duration-700 transition-colors">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8 flex justify-between items-center">
           <button 
             onClick={() => navigate('/')} 
-            className="group flex items-center text-sm font-semibold text-slate-500 hover:text-blue-600 transition-all"
+            className="group flex items-center text-sm font-semibold text-slate-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-all"
           >
-            <div className="p-2 rounded-full group-hover:bg-blue-50 mr-2 transition-colors">
+            <div className="p-2 rounded-full group-hover:bg-blue-50 dark:group-hover:bg-blue-900/30 mr-2 transition-colors">
               <ArrowLeft className="w-5 h-5" />
             </div>
             Back to Dashboard
           </button>
           
           <div className="text-right">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Attempt Date</p>
-            <p className="text-sm font-bold text-slate-700">{new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+            <p className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-[0.2em]">Attempt Date</p>
+            <p className="text-sm font-bold text-slate-700 dark:text-gray-300">{new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
           </div>
         </div>
 
-        <div className="bg-white shadow-2xl shadow-blue-100 rounded-[2.5rem] overflow-hidden mb-10 border border-white relative">
+        <div className="bg-white dark:bg-gray-800 shadow-2xl shadow-blue-100 dark:shadow-none rounded-[2.5rem] overflow-hidden mb-10 border border-white dark:border-gray-700 relative transition-colors">
           <div className="bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-800 px-6 py-16 text-center text-white relative">
             {/* Abstract Background Shapes */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-20 pointer-events-none">
@@ -85,53 +85,53 @@ const Result = () => {
             </div>
           </div>
           
-          <div className="p-8 sm:p-12 bg-white">
-            <div className="flex flex-col sm:flex-row items-center justify-between mb-10 border-b border-slate-50 pb-8 gap-4">
+          <div className="p-8 sm:p-12 bg-white dark:bg-gray-800 transition-colors">
+            <div className="flex flex-col sm:flex-row items-center justify-between mb-10 border-b border-slate-50 dark:border-gray-700 pb-8 gap-4">
                <div>
-                  <h2 className="text-3xl font-black text-slate-900 leading-tight">Performance Summary</h2>
-                  <p className="text-slate-400 font-bold text-sm">Based on the latest NIMCET marking scheme</p>
+                  <h2 className="text-3xl font-black text-slate-900 dark:text-white leading-tight">Performance Summary</h2>
+                  <p className="text-slate-400 dark:text-gray-400 font-bold text-sm">Based on the latest NIMCET marking scheme</p>
                </div>
-               <div className="flex items-center bg-yellow-50 px-5 py-3 rounded-2xl border border-yellow-100">
+               <div className="flex items-center bg-yellow-50 dark:bg-yellow-900/20 px-5 py-3 rounded-2xl border border-yellow-100 dark:border-yellow-900/50">
                   <Zap className="w-5 h-5 text-yellow-500 mr-2 fill-yellow-500" />
-                  <span className="text-sm font-black text-yellow-800 uppercase tracking-tight">Rank Potential: Top 5%</span>
+                  <span className="text-sm font-black text-yellow-800 dark:text-yellow-500 uppercase tracking-tight">Rank Potential: Top 5%</span>
                </div>
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-              <div className="group bg-blue-50/40 rounded-3xl p-6 text-center border border-blue-100 transition-all hover:bg-blue-50 hover:shadow-xl hover:-translate-y-1 duration-300">
-                <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4 text-white shadow-lg shadow-blue-200">
+              <div className="group bg-blue-50/40 dark:bg-blue-900/10 rounded-3xl p-6 text-center border border-blue-100 dark:border-blue-900/30 transition-all hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:shadow-xl hover:-translate-y-1 duration-300">
+                <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4 text-white shadow-lg shadow-blue-200 dark:shadow-none">
                    <Trophy className="w-5 h-5" />
                 </div>
-                <p className="text-[10px] text-blue-500 font-black uppercase tracking-[0.15em] mb-1">Total Score</p>
-                <p className="text-4xl font-black text-blue-800">{totalScore}</p>
-                <p className="text-[9px] text-blue-400 mt-2 font-bold uppercase">Target: 480+</p>
+                <p className="text-[10px] text-blue-500 dark:text-blue-400 font-black uppercase tracking-[0.15em] mb-1">Total Score</p>
+                <p className="text-4xl font-black text-blue-800 dark:text-blue-200">{totalScore}</p>
+                <p className="text-[9px] text-blue-400 dark:text-blue-500 mt-2 font-bold uppercase">Target: 480+</p>
               </div>
               
-              <div className="group bg-emerald-50/40 rounded-3xl p-6 text-center border border-emerald-100 transition-all hover:bg-emerald-50 hover:shadow-xl hover:-translate-y-1 duration-300">
-                <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center mx-auto mb-4 text-white shadow-lg shadow-emerald-200">
+              <div className="group bg-emerald-50/40 dark:bg-emerald-900/10 rounded-3xl p-6 text-center border border-emerald-100 dark:border-emerald-900/30 transition-all hover:bg-emerald-50 dark:hover:bg-emerald-900/20 hover:shadow-xl hover:-translate-y-1 duration-300">
+                <div className="w-10 h-10 bg-emerald-500 rounded-xl flex items-center justify-center mx-auto mb-4 text-white shadow-lg shadow-emerald-200 dark:shadow-none">
                    <CheckCircle2 className="w-5 h-5" />
                 </div>
-                <p className="text-[10px] text-emerald-500 font-black uppercase tracking-[0.15em] mb-1">Correct</p>
-                <p className="text-4xl font-black text-emerald-800">{score.correct}</p>
-                <p className="text-[9px] text-emerald-400 mt-2 font-bold uppercase">{((score.correct / score.total) * 100).toFixed(0)}% Hit Rate</p>
+                <p className="text-[10px] text-emerald-500 dark:text-emerald-400 font-black uppercase tracking-[0.15em] mb-1">Correct</p>
+                <p className="text-4xl font-black text-emerald-800 dark:text-emerald-200">{score.correct}</p>
+                <p className="text-[9px] text-emerald-400 dark:text-emerald-500 mt-2 font-bold uppercase">{((score.correct / score.total) * 100).toFixed(0)}% Hit Rate</p>
               </div>
 
-              <div className="group bg-rose-50/40 rounded-3xl p-6 text-center border border-rose-100 transition-all hover:bg-rose-50 hover:shadow-xl hover:-translate-y-1 duration-300">
-                <div className="w-10 h-10 bg-rose-500 rounded-xl flex items-center justify-center mx-auto mb-4 text-white shadow-lg shadow-rose-200">
+              <div className="group bg-rose-50/40 dark:bg-rose-900/10 rounded-3xl p-6 text-center border border-rose-100 dark:border-rose-900/30 transition-all hover:bg-rose-50 dark:hover:bg-rose-900/20 hover:shadow-xl hover:-translate-y-1 duration-300">
+                <div className="w-10 h-10 bg-rose-500 rounded-xl flex items-center justify-center mx-auto mb-4 text-white shadow-lg shadow-rose-200 dark:shadow-none">
                    <XCircle className="w-5 h-5" />
                 </div>
-                <p className="text-[10px] text-rose-500 font-black uppercase tracking-[0.15em] mb-1">Incorrect</p>
-                <p className="text-4xl font-black text-rose-800">{score.wrong}</p>
-                <p className="text-[9px] text-rose-400 mt-2 font-bold uppercase">{score.wrong > 0 ? (score.wrong * -1) : 0} Negative</p>
+                <p className="text-[10px] text-rose-500 dark:text-rose-400 font-black uppercase tracking-[0.15em] mb-1">Incorrect</p>
+                <p className="text-4xl font-black text-rose-800 dark:text-rose-200">{score.wrong}</p>
+                <p className="text-[9px] text-rose-400 dark:text-rose-500 mt-2 font-bold uppercase">{score.wrong > 0 ? (score.wrong * -1) : 0} Negative</p>
               </div>
 
-              <div className="group bg-slate-50/60 rounded-3xl p-6 text-center border border-slate-200 transition-all hover:bg-slate-100 hover:shadow-xl hover:-translate-y-1 duration-300">
-                <div className="w-10 h-10 bg-slate-600 rounded-xl flex items-center justify-center mx-auto mb-4 text-white shadow-lg shadow-slate-200">
+              <div className="group bg-slate-50/60 dark:bg-gray-700/30 rounded-3xl p-6 text-center border border-slate-200 dark:border-gray-600 transition-all hover:bg-slate-100 dark:hover:bg-gray-700/50 hover:shadow-xl hover:-translate-y-1 duration-300">
+                <div className="w-10 h-10 bg-slate-600 dark:bg-gray-500 rounded-xl flex items-center justify-center mx-auto mb-4 text-white shadow-lg shadow-slate-200 dark:shadow-none">
                    <MinusCircle className="w-5 h-5" />
                 </div>
-                <p className="text-[10px] text-slate-500 font-black uppercase tracking-[0.15em] mb-1">Skipped</p>
-                <p className="text-4xl font-black text-slate-800">{score.unattempted}</p>
-                <p className="text-[9px] text-slate-400 mt-2 font-bold uppercase">Out of {score.total + score.unattempted}</p>
+                <p className="text-[10px] text-slate-500 dark:text-gray-400 font-black uppercase tracking-[0.15em] mb-1">Skipped</p>
+                <p className="text-4xl font-black text-slate-800 dark:text-white">{score.unattempted}</p>
+                <p className="text-[9px] text-slate-400 dark:text-gray-500 mt-2 font-bold uppercase">Out of {score.total + score.unattempted}</p>
               </div>
             </div>
             

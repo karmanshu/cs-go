@@ -75,11 +75,11 @@ const Quiz = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="flex-1 w-full bg-gray-50 dark:bg-gray-900 transition-colors flex flex-col">
       {/* Header */}
-      <header className="bg-white shadow border-b border-gray-200 py-4 top-0 sticky z-10 w-full">
+      <header className="bg-white dark:bg-gray-800 shadow border-b border-gray-200 dark:border-gray-700 py-4 top-0 sticky z-10 w-full transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <h1 className="text-xl font-bold text-gray-900 truncate">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white truncate">
             {test.title}
           </h1>
           <Timer onTimeEnd={handleTimeEnd} />
@@ -91,9 +91,9 @@ const Quiz = () => {
         
         {/* Left column: Question Area */}
         <div className="lg:w-3/4 flex flex-col">
-          <div className="mb-4 flex justify-between items-center text-sm font-medium text-gray-500">
+          <div className="mb-4 flex justify-between items-center text-sm font-medium text-gray-500 dark:text-gray-400">
             <span>Question {currentIndex + 1} of {testQuestions.length}</span>
-            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
+            <span className="bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 px-2 py-1 rounded">
               {currentQuestion?.subject}
             </span>
           </div>
@@ -108,10 +108,10 @@ const Quiz = () => {
             <button
               onClick={handlePrev}
               disabled={currentIndex === 0}
-              className={`flex items-center px-4 py-2 border rounded-md text-sm font-medium ${
+              className={`flex items-center px-4 py-2 border rounded-md text-sm font-medium transition-colors ${
                 currentIndex === 0
-                  ? 'border-gray-200 text-gray-400 cursor-not-allowed bg-gray-50'
-                  : 'border-gray-300 text-gray-700 hover:bg-gray-50 bg-white'
+                  ? 'border-gray-200 dark:border-gray-700 text-gray-400 dark:text-gray-500 cursor-not-allowed bg-gray-50 dark:bg-gray-800/50'
+                  : 'border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 bg-white dark:bg-gray-800'
               }`}
             >
               <ChevronLeft className="w-5 h-5 mr-1" />
@@ -140,8 +140,8 @@ const Quiz = () => {
 
         {/* Right column: Palette */}
         <div className="lg:w-1/4">
-          <div className="bg-white shadow rounded-lg p-6 sticky top-24">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Question Palette</h3>
+          <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 sticky top-24 transition-colors border dark:border-gray-700">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Question Palette</h3>
             
             <div className="grid grid-cols-5 gap-2 mb-6">
               {testQuestions.map((q, idx) => {
@@ -157,9 +157,9 @@ const Quiz = () => {
                 }
 
                 if (isAnswered) {
-                  btnClass += isCurrent ? "bg-green-100 border-green-500" : "bg-green-500 text-white hover:bg-green-600 ";
+                  btnClass += isCurrent ? "bg-green-100 dark:bg-green-900/30 border-green-500 dark:border-green-400 text-green-800 dark:text-green-200 " : "bg-green-500 text-white hover:bg-green-600 dark:bg-green-600 dark:hover:bg-green-700 ";
                 } else {
-                  btnClass += isCurrent ? "bg-gray-50" : "bg-gray-100 text-gray-700 hover:bg-gray-200 ";
+                  btnClass += isCurrent ? "bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white " : "bg-gray-100 dark:bg-gray-700/50 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 ";
                 }
 
                 return (
@@ -174,12 +174,12 @@ const Quiz = () => {
               })}
             </div>
 
-            <div className="space-y-2 text-sm text-gray-600 border-t pt-4">
+            <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400 border-t dark:border-gray-700 pt-4">
               <div className="flex items-center">
-                <span className="w-4 h-4 bg-green-500 rounded-sm mr-2 flex-shrink-0"></span> Answered ({Object.keys(answers).length})
+                <span className="w-4 h-4 bg-green-500 dark:bg-green-600 rounded-sm mr-2 flex-shrink-0"></span> Answered ({Object.keys(answers).length})
               </div>
               <div className="flex items-center">
-                <span className="w-4 h-4 bg-gray-100 rounded-sm mr-2 flex-shrink-0 border"></span> Not Answered ({testQuestions.length - Object.keys(answers).length})
+                <span className="w-4 h-4 bg-gray-100 dark:bg-gray-700/50 rounded-sm mr-2 flex-shrink-0 border dark:border-gray-600"></span> Not Answered ({testQuestions.length - Object.keys(answers).length})
               </div>
             </div>
             
@@ -197,16 +197,16 @@ const Quiz = () => {
 
       {/* Custom Modals and Overlays */}
       {modalType === 'confirm' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300">
-          <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full transform transition-all scale-100 opacity-100">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity duration-300">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-8 max-w-md w-full transform transition-all scale-100 opacity-100">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
               <span className="text-yellow-500 mr-2 text-3xl">⚠️</span> Confirm Submission
             </h3>
-            <p className="text-gray-600 mb-8 text-lg">Are you sure you want to submit the test? You cannot change your answers after submission.</p>
+            <p className="text-gray-600 dark:text-gray-300 mb-8 text-lg">Are you sure you want to submit the test? You cannot change your answers after submission.</p>
             <div className="flex justify-end space-x-4">
               <button 
                 onClick={handleCancelSubmit}
-                className="px-6 py-2.5 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                className="px-6 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
               >
                 Cancel
               </button>
@@ -223,12 +223,12 @@ const Quiz = () => {
       )}
 
       {modalType === 'timeup' && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300">
-          <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full transform transition-all scale-100 opacity-100">
-            <h3 className="text-2xl font-bold text-red-600 mb-4 flex items-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity duration-300">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-8 max-w-md w-full transform transition-all scale-100 opacity-100">
+            <h3 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-4 flex items-center">
               <span className="mr-2 text-3xl">⏰</span> Time is up!
             </h3>
-            <p className="text-gray-600 mb-8 text-lg">Your allocated time has expired. Your answers will be automatically submitted now.</p>
+            <p className="text-gray-600 dark:text-gray-300 mb-8 text-lg">Your allocated time has expired. Your answers will be automatically submitted now.</p>
             <div className="flex justify-end">
               <button 
                 onClick={handleTimeUpAcknowledge}
@@ -242,7 +242,7 @@ const Quiz = () => {
       )}
 
       {isSubmitting && (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white bg-opacity-95 backdrop-blur-sm transition-opacity duration-500">
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm transition-opacity duration-500">
           <div className="relative mb-8">
             <div className="animate-spin rounded-full h-24 w-24 border-t-4 border-b-4 border-blue-600 opacity-75"></div>
             <div className="animate-spin rounded-full h-24 w-24 border-r-4 border-l-4 border-green-500 opacity-75 absolute top-0 left-0" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
@@ -250,7 +250,7 @@ const Quiz = () => {
           <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-green-600 animate-pulse mb-4">
             Calculating your score...
           </h2>
-          <p className="text-gray-500 mt-2 text-xl font-medium">Preparing Scoreboard & Analysis</p>
+          <p className="text-gray-500 dark:text-gray-400 mt-2 text-xl font-medium">Preparing Scoreboard & Analysis</p>
         </div>
       )}
     </div>

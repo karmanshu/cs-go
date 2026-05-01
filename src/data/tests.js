@@ -28,5 +28,12 @@ export const tests = [
     subject: "LR",
     duration: 5,
     questionIds: questions.filter(q => q.subject === "LR").map(q => q.id)
+  },
+  {
+    id: 5,
+    title: "General English Test",
+    subject: "English",
+    duration: 5,
+    questionIds: questions.filter(q => q.subject === "English").map(q => q.id)
   }
 ];
