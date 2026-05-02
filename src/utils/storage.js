@@ -1,15 +1,76 @@
 // Storage utilities
-export const saveUser = (username) => {
-  localStorage.setItem('user', JSON.stringify({ username }));
+const USER_STORAGE_KEY = 'cs_go_user';
+const LEGACY_USER_STORAGE_KEY = 'user';
+const SESSION_DURATION_MS = 8 * 60 * 60 * 1000;
+
+const getStorage = (remember = false) => (remember ? localStorage : sessionStorage);
+
+const parseJson = (value) => {
+  if (!value) return null;
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    return null;
+  }
+};
+
+const createSessionId = () => {
+  const browserCrypto = globalThis.crypto;
+
+  if (browserCrypto?.randomUUID) {
+    return browserCrypto.randomUUID();
+  }
+
+  const bytes = new Uint8Array(16);
+  browserCrypto.getRandomValues(bytes);
+  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
+};
+
+const isValidUserSession = (user) => {
+  if (!user || typeof user.username !== 'string') return false;
+  if (typeof user.sessionId !== 'string' || user.sessionId.length < 16) return false;
+  if (typeof user.expiresAt !== 'number' || user.expiresAt <= Date.now()) return false;
+  return true;
+};
+
+export const saveUser = (username, remember = false) => {
+  removeUser();
+
+  const user = {
+    username,
+    sessionId: createSessionId(),
+    createdAt: Date.now(),
+    expiresAt: Date.now() + SESSION_DURATION_MS,
+  };
+
+  getStorage(remember).setItem(USER_STORAGE_KEY, JSON.stringify(user));
+  return user;
 };
 
 export const getUser = () => {
-  const user = localStorage.getItem('user');
-  return user ? JSON.parse(user) : null;
+  const sessionUser = parseJson(sessionStorage.getItem(USER_STORAGE_KEY));
+  const persistentUser = parseJson(localStorage.getItem(USER_STORAGE_KEY));
+  const legacyUser = parseJson(localStorage.getItem(LEGACY_USER_STORAGE_KEY));
+  const activeUser = sessionUser || persistentUser;
+
+  if (isValidUserSession(activeUser)) {
+    return activeUser;
+  }
+
+  if (legacyUser?.username) {
+    removeUser();
+    return saveUser(String(legacyUser.username).trim(), false);
+  }
+
+  removeUser();
+  return null;
 };
 
 export const removeUser = () => {
-  localStorage.removeItem('user');
+  sessionStorage.removeItem(USER_STORAGE_KEY);
+  localStorage.removeItem(USER_STORAGE_KEY);
+  localStorage.removeItem(LEGACY_USER_STORAGE_KEY);
 };
 
 export const saveQuizProgress = (data) => {

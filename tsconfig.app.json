@@ -6,8 +6,10 @@
     "module": "esnext",
     "types": ["vite/client"],
     "skipLibCheck": true,
+    "noImplicitAny": false,
 
     /* Bundler mode */
+    "allowJs": true,
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,

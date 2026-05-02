@@ -1,9 +1,15 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, ReactNode, useContext } from 'react';
 
-export const ThemeContext = createContext();
+interface ThemeContextType {
+  isDarkMode: boolean;
+  toggleDarkMode: () => void;
+}
 
-export const ThemeProvider = ({ children }) => {
-  const [isDarkMode, setIsDarkMode] = useState(() => {
+// eslint-disable-next-line react-refresh/only-export-components
+export const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+
+export const ThemeProvider = ({ children }: { children: ReactNode }) => {
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     // Check local storage or system preference
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) {
@@ -30,4 +36,13 @@ export const ThemeProvider = ({ children }) => {
       {children}
     </ThemeContext.Provider>
   );
+};
+
+// eslint-disable-next-line react-refresh/only-export-components
+export const useTheme = () => {
+  const context = useContext(ThemeContext);
+  if (context === undefined) {
+    throw new Error('useTheme must be used within a ThemeProvider');
+  }
+  return context;
 };

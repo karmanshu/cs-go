@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { questions } from '../data/questions';
+import { tests } from '../data/tests';
 import { CheckCircle2, XCircle, MinusCircle, ArrowLeft, Trophy, Zap, Clock, Target } from 'lucide-react';
 
 const Result = () => {
@@ -14,8 +15,31 @@ const Result = () => {
 
   const { score, answers, testTitle, testId } = result;
   
-  const accuracy = score.total > 0 ? ((score.correct / score.total) * 100).toFixed(1) : 0;
-  const totalScore = score.correct * 4 - score.wrong;
+  const attempted = score.attempted ?? score.correct + score.wrong;
+  const accuracy = attempted > 0 ? ((score.correct / attempted) * 100).toFixed(1) : 0;
+  const totalScore = score.totalScore ?? score.correct * 4 - score.wrong;
+  const answerKey = useMemo(() => {
+    const test = tests.find((item) => item.id === testId);
+    const testQuestionIds = test?.questionIds ?? [];
+
+    return testQuestionIds
+      .map((id) => questions.find((question) => question.id === id))
+      .filter(Boolean)
+      .map((question, index) => {
+        const hasAnswer = Object.prototype.hasOwnProperty.call(answers, question.id);
+        const selectedAnswer = hasAnswer ? Number(answers[question.id]) : null;
+        const correctAnswer = Number(question.correctAnswer);
+
+        return {
+          ...question,
+          number: index + 1,
+          selectedAnswer,
+          correctAnswer,
+          isAnswered: selectedAnswer !== null && Number.isInteger(selectedAnswer),
+          isCorrect: selectedAnswer === correctAnswer
+        };
+      });
+  }, [answers, testId]);
 
   return (
     <div className="flex-1 w-full bg-[#f8fafc] dark:bg-gray-900 py-10 px-4 sm:px-6 lg:px-8 animate-in fade-in duration-700 transition-colors">
@@ -113,7 +137,7 @@ const Result = () => {
                 </div>
                 <p className="text-[10px] text-emerald-500 dark:text-emerald-400 font-black uppercase tracking-[0.15em] mb-1">Correct</p>
                 <p className="text-4xl font-black text-emerald-800 dark:text-emerald-200">{score.correct}</p>
-                <p className="text-[9px] text-emerald-400 dark:text-emerald-500 mt-2 font-bold uppercase">{((score.correct / score.total) * 100).toFixed(0)}% Hit Rate</p>
+                <p className="text-[9px] text-emerald-400 dark:text-emerald-500 mt-2 font-bold uppercase">{attempted > 0 ? ((score.correct / attempted) * 100).toFixed(0) : 0}% Hit Rate</p>
               </div>
 
               <div className="group bg-rose-50/40 dark:bg-rose-900/10 rounded-3xl p-6 text-center border border-rose-100 dark:border-rose-900/30 transition-all hover:bg-rose-50 dark:hover:bg-rose-900/20 hover:shadow-xl hover:-translate-y-1 duration-300">
@@ -131,7 +155,61 @@ const Result = () => {
                 </div>
                 <p className="text-[10px] text-slate-500 dark:text-gray-400 font-black uppercase tracking-[0.15em] mb-1">Skipped</p>
                 <p className="text-4xl font-black text-slate-800 dark:text-white">{score.unattempted}</p>
-                <p className="text-[9px] text-slate-400 dark:text-gray-500 mt-2 font-bold uppercase">Out of {score.total + score.unattempted}</p>
+                <p className="text-[9px] text-slate-400 dark:text-gray-500 mt-2 font-bold uppercase">Out of {score.total}</p>
+              </div>
+            </div>
+
+            <div className="mb-12 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-[2rem] overflow-hidden">
+              <div className="px-6 py-5 border-b border-slate-100 dark:border-gray-700">
+                <h3 className="text-xl font-black text-slate-900 dark:text-white">Answer Key</h3>
+                <p className="text-sm text-slate-500 dark:text-gray-400 mt-1">Correct answers for {testTitle}</p>
+              </div>
+              <div className="divide-y divide-slate-100 dark:divide-gray-700">
+                {answerKey.map((question) => (
+                  <div key={question.id} className="p-6">
+                    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="flex-1">
+                        <p className="text-xs font-black uppercase tracking-[0.15em] text-blue-600 dark:text-blue-400 mb-2">
+                          Question {question.number} · {question.subject}
+                        </p>
+                        <p className="font-bold text-slate-900 dark:text-white">{question.question}</p>
+                        <div className="mt-4 grid gap-2">
+                          {question.options.map((option, index) => {
+                            const isCorrectOption = index === question.correctAnswer;
+                            const isSelectedOption = question.isAnswered && index === question.selectedAnswer;
+
+                            return (
+                              <div
+                                key={option}
+                                className={`flex items-start rounded-lg border px-4 py-3 text-sm ${
+                                  isCorrectOption
+                                    ? 'border-emerald-300 bg-emerald-50 text-emerald-900 dark:border-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-100'
+                                    : isSelectedOption
+                                      ? 'border-rose-300 bg-rose-50 text-rose-900 dark:border-rose-800 dark:bg-rose-900/20 dark:text-rose-100'
+                                      : 'border-slate-200 bg-slate-50 text-slate-700 dark:border-gray-700 dark:bg-gray-700/30 dark:text-gray-300'
+                                }`}
+                              >
+                                <span className="mr-3 font-black">{String.fromCharCode(65 + index)}.</span>
+                                <span className="flex-1">{option}</span>
+                                {isCorrectOption && <span className="ml-3 font-black text-emerald-600 dark:text-emerald-300">Correct</span>}
+                                {!isCorrectOption && isSelectedOption && <span className="ml-3 font-black text-rose-600 dark:text-rose-300">Your answer</span>}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                      <div className={`shrink-0 rounded-full px-3 py-1 text-xs font-black uppercase ${
+                        question.isCorrect
+                          ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+                          : question.isAnswered
+                            ? 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300'
+                            : 'bg-slate-100 text-slate-600 dark:bg-gray-700 dark:text-gray-300'
+                      }`}>
+                        {question.isCorrect ? 'Correct' : question.isAnswered ? 'Incorrect' : 'Skipped'}
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
             
