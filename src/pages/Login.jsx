@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import { AlertCircle, ArrowRight, ShieldCheck, UserRound } from "lucide-react";
+import { AlertCircle, ArrowRight, ShieldCheck, UserRound, Settings } from "lucide-react";
 
 const USERNAME_PATTERN = /^[a-zA-Z0-9][a-zA-Z0-9 ._-]{1,22}[a-zA-Z0-9]$/;
 
@@ -27,6 +27,8 @@ const validateUsername = (value) => {
 
 const Login = () => {
   const [username, setUsername] = useState("");
+  const [loginMode, setLoginMode] = useState("student");
+  const [adminCode, setAdminCode] = useState("");
   const [remember, setRemember] = useState(false);
   const [error, setError] = useState("");
   const { login, user } = useContext(AuthContext);
@@ -34,7 +36,7 @@ const Login = () => {
 
   useEffect(() => {
     if (user) {
-      navigate("/");
+      navigate(user.role === "admin" ? "/admin" : "/");
     }
   }, [user, navigate]);
 
@@ -48,8 +50,13 @@ const Login = () => {
       return;
     }
 
-    login(normalizedUsername, remember);
-    navigate("/");
+    if (loginMode === "admin" && adminCode.trim() !== "admin123") {
+      setError("Enter the correct admin access code.");
+      return;
+    }
+
+    login(normalizedUsername, remember, loginMode);
+    navigate(loginMode === "admin" ? "/admin" : "/");
   };
 
   const validationMessage = username ? validateUsername(username) : "";
@@ -113,6 +120,38 @@ const Login = () => {
                 Start a browser session for your test progress. Use a display name you recognize.
               </p>
 
+              <div className="mt-6 grid grid-cols-2 gap-2 rounded-lg bg-gray-100 p-1 dark:bg-gray-900">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLoginMode("student");
+                    setError("");
+                  }}
+                  className={`rounded-md px-3 py-2 text-sm font-bold transition ${
+                    loginMode === "student"
+                      ? "bg-white text-blue-700 shadow-sm dark:bg-gray-800 dark:text-blue-300"
+                      : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                  }`}
+                >
+                  Student Login
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLoginMode("admin");
+                    setError("");
+                  }}
+                  className={`inline-flex items-center justify-center rounded-md px-3 py-2 text-sm font-bold transition ${
+                    loginMode === "admin"
+                      ? "bg-white text-blue-700 shadow-sm dark:bg-gray-800 dark:text-blue-300"
+                      : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                  }`}
+                >
+                  <Settings className="mr-2 h-4 w-4" />
+                  Admin
+                </button>
+              </div>
+
               <form className="mt-8 space-y-5" onSubmit={handleSubmit} noValidate>
                 <div>
                   <label
@@ -153,6 +192,31 @@ const Login = () => {
                   )}
                 </div>
 
+                {loginMode === "admin" && (
+                  <div>
+                    <label
+                      htmlFor="admin-code"
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      Admin access code
+                    </label>
+                    <input
+                      id="admin-code"
+                      type="password"
+                      value={adminCode}
+                      onChange={(e) => {
+                        setAdminCode(e.target.value);
+                        setError("");
+                      }}
+                      placeholder="Enter admin code"
+                      className="mt-2 block w-full rounded-md border border-gray-300 bg-white px-3 py-3 text-gray-900 shadow-sm transition-colors placeholder-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/30 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm"
+                    />
+                    <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                      Default local admin code: admin123
+                    </p>
+                  </div>
+                )}
+
                 <label className="flex items-start gap-3 rounded-md border border-gray-200 dark:border-gray-700 p-3 text-sm text-gray-700 dark:text-gray-300">
                   <input
                     type="checkbox"
@@ -173,7 +237,7 @@ const Login = () => {
                   disabled={isSubmitDisabled}
                   className="flex w-full items-center justify-center gap-2 rounded-md border border-transparent bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-colors duration-200 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-gray-700 dark:disabled:text-gray-400"
               >
-                Start Practicing
+                {loginMode === "admin" ? "Open Admin Panel" : "Start Practicing"}
                   <ArrowRight className="h-4 w-4" />
               </button>
               </form>

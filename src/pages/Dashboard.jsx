@@ -4,6 +4,7 @@ import { QuizContext } from '../context/QuizContext';
 import { AuthContext } from '../context/AuthContext';
 import TestCard from '../components/TestCard';
 import { tests } from '../data/tests';
+import { getAdminTests } from '../utils/storage';
 import { PlayCircle } from 'lucide-react';
 
 const Dashboard = () => {
@@ -12,12 +13,17 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const [showResumeModal, setShowResumeModal] = useState(false);
+  const [adminTests, setAdminTests] = useState([]);
 
   useEffect(() => {
     if (activeTest) {
       setShowResumeModal(true);
     }
   }, [activeTest]);
+
+  useEffect(() => {
+    setAdminTests(getAdminTests());
+  }, []);
 
   const handleResume = () => {
     setShowResumeModal(false);
@@ -61,7 +67,7 @@ const Dashboard = () => {
             )}
 
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {tests.map(test => (
+              {[...adminTests, ...tests].map(test => (
                 <TestCard 
                   key={test.id} 
                   test={test} 

@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import { ThemeContext } from '../context/ThemeContext';
-import { LogOut, LayoutDashboard, History, Moon, Sun, Lightbulb } from 'lucide-react';
+import { LogOut, LayoutDashboard, History, Moon, Sun, Lightbulb, Settings } from 'lucide-react';
 import QuickTipsModal from './QuickTipsModal';
 
 const Navbar = () => {
@@ -36,6 +36,12 @@ const Navbar = () => {
                   <History className="w-4 h-4 mr-2" />
                   History
                 </Link>
+                {user.role === 'admin' && (
+                  <Link to="/admin" className="border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-200 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors">
+                    <Settings className="w-4 h-4 mr-2" />
+                    Admin
+                  </Link>
+                )}
               </div>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4">
@@ -77,6 +83,9 @@ const Navbar = () => {
           <div className="pt-2 pb-3 space-y-1">
             <Link to="/" className="text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200 block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium transition-colors">Dashboard</Link>
             <Link to="/history" className="text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200 block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium transition-colors">History</Link>
+            {user.role === 'admin' && (
+              <Link to="/admin" className="text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200 block pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium transition-colors">Admin</Link>
+            )}
           </div>
         </div>
       </nav>

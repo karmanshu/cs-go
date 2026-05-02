@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { questions } from '../data/questions';
 import { tests } from '../data/tests';
+import { getAdminQuestions, getAdminTests } from '../utils/storage';
 import { CheckCircle2, XCircle, MinusCircle, ArrowLeft, Trophy, Zap, Clock, Target } from 'lucide-react';
 
 const Result = () => {
@@ -19,11 +20,13 @@ const Result = () => {
   const accuracy = attempted > 0 ? ((score.correct / attempted) * 100).toFixed(1) : 0;
   const totalScore = score.totalScore ?? score.correct * 4 - score.wrong;
   const answerKey = useMemo(() => {
-    const test = tests.find((item) => item.id === testId);
+    const allTests = [...getAdminTests(), ...tests];
+    const allQuestions = [...getAdminQuestions(), ...questions];
+    const test = allTests.find((item) => String(item.id) === String(testId));
     const testQuestionIds = test?.questionIds ?? [];
 
     return testQuestionIds
-      .map((id) => questions.find((question) => question.id === id))
+      .map((id) => allQuestions.find((question) => String(question.id) === String(id)))
       .filter(Boolean)
       .map((question, index) => {
         const hasAnswer = Object.prototype.hasOwnProperty.call(answers, question.id);

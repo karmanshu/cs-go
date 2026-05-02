@@ -1,6 +1,8 @@
 // Storage utilities
 const USER_STORAGE_KEY = 'cs_go_user';
 const LEGACY_USER_STORAGE_KEY = 'user';
+const ADMIN_TESTS_KEY = 'cs_go_admin_tests';
+const ADMIN_QUESTIONS_KEY = 'cs_go_admin_questions';
 const SESSION_DURATION_MS = 8 * 60 * 60 * 1000;
 
 const getStorage = (remember = false) => (remember ? localStorage : sessionStorage);
@@ -34,11 +36,12 @@ const isValidUserSession = (user) => {
   return true;
 };
 
-export const saveUser = (username, remember = false) => {
+export const saveUser = (username, remember = false, role = 'student') => {
   removeUser();
 
   const user = {
     username,
+    role,
     sessionId: createSessionId(),
     createdAt: Date.now(),
     expiresAt: Date.now() + SESSION_DURATION_MS,
@@ -95,4 +98,16 @@ export const saveQuizResult = (result) => {
 export const getQuizResults = () => {
   const results = localStorage.getItem('quiz_results');
   return results ? JSON.parse(results) : [];
+};
+
+export const getAdminTests = () => parseJson(localStorage.getItem(ADMIN_TESTS_KEY)) || [];
+
+export const getAdminQuestions = () => parseJson(localStorage.getItem(ADMIN_QUESTIONS_KEY)) || [];
+
+export const saveAdminQuiz = (quiz) => {
+  const tests = getAdminTests();
+  const questions = getAdminQuestions();
+
+  localStorage.setItem(ADMIN_TESTS_KEY, JSON.stringify([quiz.test, ...tests]));
+  localStorage.setItem(ADMIN_QUESTIONS_KEY, JSON.stringify([...quiz.questions, ...questions]));
 };

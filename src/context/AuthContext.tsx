@@ -3,6 +3,7 @@ import { getUser, saveUser, removeUser } from '../utils/storage';
 
 interface User {
   username: string;
+  role?: 'student' | 'admin';
   sessionId: string;
   createdAt: number;
   expiresAt: number;
@@ -10,7 +11,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  login: (username: string, remember?: boolean) => void;
+  login: (username: string, remember?: boolean, role?: 'student' | 'admin') => void;
   logout: () => void;
   loading: boolean;
 }
@@ -33,8 +34,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     initAuth();
   }, []);
 
-  const login = (username: string, remember = false) => {
-    const savedUser = saveUser(username, remember);
+  const login = (username: string, remember = false, role: 'student' | 'admin' = 'student') => {
+    const savedUser = saveUser(username, remember, role);
     setUserState(savedUser);
   };
 

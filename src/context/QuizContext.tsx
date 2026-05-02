@@ -1,16 +1,23 @@
-import { createContext, useState, useEffect, useContext, type ReactNode } from 'react';
-import { getQuizProgress, saveQuizProgress, clearQuizProgress, saveQuizResult } from '../utils/storage';
+import { createContext, useState, useEffect, useContext, useCallback, type ReactNode } from 'react';
+import { getQuizProgress, saveQuizProgress, clearQuizProgress, saveQuizResult, getAdminTests, getAdminQuestions } from '../utils/storage';
 import { tests } from '../data/tests';
 import { questions } from '../data/questions';
 import { calculateScore } from '../utils/helpers';
 
 interface QuizContextType {
-  activeTest: string | null;
+  activeTest: string | number | null;
   answers: Record<string, number>;
+  markedForReview: Record<string, boolean>;
+  visitedQuestions: Record<string, boolean>;
+  currentQuestionIndex: number;
   timeRemaining: number;
   setTimeRemaining: React.Dispatch<React.SetStateAction<number>>;
-  startQuiz: (testId: string) => void;
+  startQuiz: (testId: string | number) => void;
   answerQuestion: (questionId: string, optionIndex: number) => void;
+  clearAnswer: (questionId: string) => void;
+  toggleReview: (questionId: string) => void;
+  visitQuestion: (questionId: string) => void;
+  setCurrentQuestionIndex: React.Dispatch<React.SetStateAction<number>>;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
   submitQuiz: () => any;
 }
@@ -19,8 +26,11 @@ interface QuizContextType {
 export const QuizContext = createContext<QuizContextType | undefined>(undefined);
 
 export const QuizProvider = ({ children }: { children: ReactNode }) => {
-  const [activeTest, setActiveTest] = useState<string | null>(null);
+  const [activeTest, setActiveTest] = useState<string | number | null>(null);
   const [answers, setAnswers] = useState<Record<string, number>>({});
+  const [markedForReview, setMarkedForReview] = useState<Record<string, boolean>>({});
+  const [visitedQuestions, setVisitedQuestions] = useState<Record<string, boolean>>({});
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [timeRemaining, setTimeRemaining] = useState<number>(0);
 
   // Load progress on mount
@@ -30,6 +40,9 @@ export const QuizProvider = ({ children }: { children: ReactNode }) => {
       if (progress) {
         setActiveTest(progress.activeTest);
         setAnswers(progress.answers || {});
+        setMarkedForReview(progress.markedForReview || {});
+        setVisitedQuestions(progress.visitedQuestions || {});
+        setCurrentQuestionIndex(progress.currentQuestionIndex || 0);
         
         // Calculate remaining time
         const elapsed = Math.floor((Date.now() - progress.startTime) / 1000);
@@ -43,8 +56,8 @@ export const QuizProvider = ({ children }: { children: ReactNode }) => {
   // Save progress periodically when active test changes
   useEffect(() => {
     if (activeTest) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const test = tests.find((t: any) => t.id === activeTest);
+      const allTests = [...getAdminTests(), ...tests];
+      const test = allTests.find((t) => String(t.id) === String(activeTest));
       if (!test) return;
 
       const progress = getQuizProgress();
@@ -54,23 +67,32 @@ export const QuizProvider = ({ children }: { children: ReactNode }) => {
       saveQuizProgress({
         activeTest,
         answers,
+        markedForReview,
+        visitedQuestions,
+        currentQuestionIndex,
         startTime,
         duration
       });
     }
-  }, [activeTest, answers]);
+  }, [activeTest, answers, markedForReview, visitedQuestions, currentQuestionIndex]);
 
-  const startQuiz = (testId: string) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const test = tests.find((t: any) => t.id === testId);
+  const startQuiz = (testId: string | number) => {
+    const allTests = [...getAdminTests(), ...tests];
+    const test = allTests.find((t) => String(t.id) === String(testId));
     if (!test) return;
 
     setActiveTest(testId);
     setAnswers({});
+    setMarkedForReview({});
+    setVisitedQuestions({});
+    setCurrentQuestionIndex(0);
     setTimeRemaining(test.duration * 60);
     saveQuizProgress({
       activeTest: testId,
       answers: {},
+      markedForReview: {},
+      visitedQuestions: {},
+      currentQuestionIndex: 0,
       startTime: Date.now(),
       duration: test.duration
     });
@@ -78,17 +100,44 @@ export const QuizProvider = ({ children }: { children: ReactNode }) => {
 
   const answerQuestion = (questionId: string, optionIndex: number) => {
     setAnswers(prev => ({ ...prev, [questionId]: optionIndex }));
+    setVisitedQuestions(prev => ({ ...prev, [questionId]: true }));
   };
+
+  const clearAnswer = (questionId: string) => {
+    setAnswers(prev => {
+      const updated = { ...prev };
+      delete updated[questionId];
+      return updated;
+    });
+    setVisitedQuestions(prev => ({ ...prev, [questionId]: true }));
+  };
+
+  const toggleReview = (questionId: string) => {
+    setMarkedForReview(prev => {
+      const updated = { ...prev };
+      if (updated[questionId]) {
+        delete updated[questionId];
+      } else {
+        updated[questionId] = true;
+      }
+      return updated;
+    });
+    setVisitedQuestions(prev => ({ ...prev, [questionId]: true }));
+  };
+
+  const visitQuestion = useCallback((questionId: string) => {
+    setVisitedQuestions(prev => (prev[questionId] ? prev : { ...prev, [questionId]: true }));
+  }, []);
 
   const submitQuiz = () => {
     if (!activeTest) return null;
     
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const test = tests.find((t: any) => t.id === activeTest);
+    const allTests = [...getAdminTests(), ...tests];
+    const allQuestions = [...getAdminQuestions(), ...questions];
+    const test = allTests.find((t) => String(t.id) === String(activeTest));
     if (!test) return null;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const testQuestions = test.questionIds.map((id) => questions.find((q) => q.id === id)).filter(Boolean);
+    const testQuestions = test.questionIds.map((id) => allQuestions.find((q) => String(q.id) === String(id))).filter(Boolean);
     
     const scoreData = calculateScore(answers, testQuestions);
     const result = {
@@ -97,7 +146,10 @@ export const QuizProvider = ({ children }: { children: ReactNode }) => {
       testTitle: test.title,
       date: new Date().toISOString(),
       score: scoreData,
-      answers: answers
+      answers,
+      markedForReview,
+      visitedQuestions,
+      completedAt: Date.now()
     };
 
     saveQuizResult(result);
@@ -105,6 +157,9 @@ export const QuizProvider = ({ children }: { children: ReactNode }) => {
     clearQuizProgress();
     setActiveTest(null);
     setAnswers({});
+    setMarkedForReview({});
+    setVisitedQuestions({});
+    setCurrentQuestionIndex(0);
     
     return result;
   };
@@ -113,10 +168,17 @@ export const QuizProvider = ({ children }: { children: ReactNode }) => {
     <QuizContext.Provider value={{
       activeTest,
       answers,
+      markedForReview,
+      visitedQuestions,
+      currentQuestionIndex,
       timeRemaining,
       setTimeRemaining,
       startQuiz,
       answerQuestion,
+      clearAnswer,
+      toggleReview,
+      visitQuestion,
+      setCurrentQuestionIndex,
       submitQuiz
     }}>
       {children}

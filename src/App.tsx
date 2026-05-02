@@ -13,6 +13,7 @@ import Dashboard from './pages/Dashboard';
 import Quiz from './pages/Quiz';
 import Result from './pages/Result';
 import History from './pages/History';
+import Admin from './pages/Admin';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -66,6 +67,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <History />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin" 
+              element={
+                <ProtectedRoute>
+                  <Admin />
                 </ProtectedRoute>
               } 
             />

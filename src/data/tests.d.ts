@@ -1,7 +1,7 @@
 // Data type declarations
 
 export interface Question {
-  id: number;
+  id: number | string;
   subject: string;
   question: string;
   options: string[];
@@ -9,11 +9,13 @@ export interface Question {
 }
 
 export interface Test {
-  id: number;
+  id: number | string;
   title: string;
   subject: string;
   duration: number;
-  questionIds: number[];
+  questionIds: Array<number | string>;
+  createdByAdmin?: boolean;
+  createdAt?: string;
 }
 
 export const tests: Test[];
